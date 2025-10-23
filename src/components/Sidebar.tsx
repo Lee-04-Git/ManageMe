@@ -1,8 +1,21 @@
 "use client"
 
 import { BarChart3, MessageSquare, Folder, Heart, Star, User } from "lucide-react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 export default function Sidebar() {
+  const pathname = usePathname()
+  
+  const navItems = [
+    { icon: BarChart3, href: "/", label: "Dashboard" },
+    { icon: MessageSquare, href: "/messages", label: "Messages" },
+    { icon: Folder, href: "/projects", label: "Projects" },
+    { icon: Heart, href: "/favorites", label: "Favorites" },
+    { icon: Star, href: "/reviews", label: "Reviews" },
+    { icon: User, href: "/profile", label: "Profile" }
+  ]
+
   return (
     <div className="w-20 bg-[#1a1d23] flex flex-col items-center py-8 gap-8 rounded-l-3xl">
       {/* Logo */}
@@ -17,28 +30,26 @@ export default function Sidebar() {
         <span className="text-white text-xs font-semibold">check<span className="font-normal">mark</span></span>
       </div>
 
-      {/* Chart Icon - Active */}
-      <div className="w-14 h-14 rounded-full bg-[#ff6b6b] flex items-center justify-center">
-        <BarChart3 className="w-6 h-6 text-white" />
-      </div>
-
       {/* Navigation Icons */}
       <div className="flex flex-col gap-6 mt-4">
-        <button className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white transition-colors">
-          <MessageSquare className="w-5 h-5" />
-        </button>
-        <button className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white transition-colors">
-          <Folder className="w-5 h-5" />
-        </button>
-        <button className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white transition-colors">
-          <Heart className="w-5 h-5" />
-        </button>
-        <button className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white transition-colors">
-          <Star className="w-5 h-5" />
-        </button>
-        <button className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white transition-colors">
-          <User className="w-5 h-5" />
-        </button>
+        {navItems.map((item, index) => {
+          const IconComponent = item.icon
+          const isActive = pathname === item.href
+          
+          return (
+            <Link key={index} href={item.href} title={item.label}>
+              <div className={`w-14 h-14 rounded-full flex items-center justify-center transition-colors ${
+                isActive 
+                  ? 'bg-[#ff6b6b]' 
+                  : 'hover:bg-[#ff6b6b]/20'
+              }`}>
+                <IconComponent className={`w-6 h-6 ${
+                  isActive ? 'text-white' : 'text-gray-400 hover:text-white'
+                }`} />
+              </div>
+            </Link>
+          )
+        })}
       </div>
     </div>
   )
