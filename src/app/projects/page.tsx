@@ -25,8 +25,8 @@ export default function Projects() {
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
   const [favorites, setFavorites] = useState<number[]>(() => {
     // Load favorites from localStorage
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('project-favorites');
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("project-favorites");
       return saved ? JSON.parse(saved) : [];
     }
     return [];
@@ -138,47 +138,57 @@ export default function Projects() {
 
   // Filter and search logic
   const filteredProjects = projects.filter((project) => {
-    const matchesSearch = project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         project.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = filterStatus === "All" || project.status === filterStatus;
-    const matchesPriority = filterPriority === "All" || project.priority === filterPriority;
-    
+    const matchesSearch =
+      project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      project.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus =
+      filterStatus === "All" || project.status === filterStatus;
+    const matchesPriority =
+      filterPriority === "All" || project.priority === filterPriority;
+
     return matchesSearch && matchesStatus && matchesPriority;
   });
 
   // Favorites management
   const toggleFavorite = (projectId: number) => {
     const newFavorites = favorites.includes(projectId)
-      ? favorites.filter(id => id !== projectId)
+      ? favorites.filter((id) => id !== projectId)
       : [...favorites, projectId];
-    
+
     setFavorites(newFavorites);
-    
+
     // Save to localStorage
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('project-favorites', JSON.stringify(newFavorites));
-      
+    if (typeof window !== "undefined") {
+      localStorage.setItem("project-favorites", JSON.stringify(newFavorites));
+
       // Also save to a global favorites list for the favorites page
-      const allFavoriteProjects = projects.filter(p => newFavorites.includes(p.id));
-      localStorage.setItem('favorite-projects', JSON.stringify(allFavoriteProjects));
+      const allFavoriteProjects = projects.filter((p) =>
+        newFavorites.includes(p.id)
+      );
+      localStorage.setItem(
+        "favorite-projects",
+        JSON.stringify(allFavoriteProjects)
+      );
     }
   };
 
   const isFavorite = (projectId: number) => favorites.includes(projectId);
 
   const updateProjectStatus = (projectId: number, newStatus: string) => {
-    setProjects(prev => prev.map(project => 
-      project.id === projectId ? { ...project, status: newStatus } : project
-    ));
+    setProjects((prev) =>
+      prev.map((project) =>
+        project.id === projectId ? { ...project, status: newStatus } : project
+      )
+    );
   };
 
   const deleteProject = (projectId: number) => {
-    setProjects(prev => prev.filter(project => project.id !== projectId));
+    setProjects((prev) => prev.filter((project) => project.id !== projectId));
   };
 
   const handleProjectAction = (action: string, projectId: number) => {
-    const project = projects.find(p => p.id === projectId);
-    
+    const project = projects.find((p) => p.id === projectId);
+
     switch (action) {
       case "view":
         // Navigate to project detail page
@@ -222,10 +232,13 @@ export default function Projects() {
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-white mb-2">Projects</h1>
-            <p className="text-gray-400">Manage and track all your projects ({filteredProjects.length} of {projects.length})</p>
+            <p className="text-gray-400">
+              Manage and track all your projects ({filteredProjects.length} of{" "}
+              {projects.length})
+            </p>
           </div>
 
-          <button 
+          <button
             onClick={() => setShowNewProjectModal(true)}
             className="bg-[#ff6b6b] hover:bg-[#ff5252] text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-colors"
           >
@@ -304,13 +317,17 @@ export default function Projects() {
               <div className="flex justify-between items-start mb-4">
                 <div className={`w-3 h-3 rounded-full ${project.color}`}></div>
                 <div className="relative">
-                  <button 
-                    onClick={() => setActiveDropdown(activeDropdown === project.id ? null : project.id)}
+                  <button
+                    onClick={() =>
+                      setActiveDropdown(
+                        activeDropdown === project.id ? null : project.id
+                      )
+                    }
                     className="text-gray-400 hover:text-white transition-colors"
                   >
                     <MoreVertical className="w-5 h-5" />
                   </button>
-                  
+
                   {activeDropdown === project.id && (
                     <div className="absolute right-0 top-8 bg-[#3a3d45] rounded-lg shadow-lg py-2 min-w-[150px] z-10">
                       <button
@@ -326,13 +343,19 @@ export default function Projects() {
                         Edit Project
                       </button>
                       <button
-                        onClick={() => handleProjectAction("favorite", project.id)}
+                        onClick={() =>
+                          handleProjectAction("favorite", project.id)
+                        }
                         className="w-full text-left px-4 py-2 text-gray-300 hover:bg-[#4a4d55] hover:text-white transition-colors"
                       >
-                        {isFavorite(project.id) ? "Remove from Favorites" : "Add to Favorites"}
+                        {isFavorite(project.id)
+                          ? "Remove from Favorites"
+                          : "Add to Favorites"}
                       </button>
                       <button
-                        onClick={() => handleProjectAction("delete", project.id)}
+                        onClick={() =>
+                          handleProjectAction("delete", project.id)
+                        }
                         className="w-full text-left px-4 py-2 text-red-400 hover:bg-[#4a4d55] hover:text-red-300 transition-colors"
                       >
                         Delete Project
@@ -383,7 +406,9 @@ export default function Projects() {
               <div className="flex justify-between items-center text-sm">
                 <div className="flex items-center gap-2">
                   <Users className="w-4 h-4 text-gray-400" />
-                  <span className="text-gray-400">{project.team.length} members</span>
+                  <span className="text-gray-400">
+                    {project.team.length} members
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-gray-400" />
