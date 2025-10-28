@@ -124,7 +124,7 @@ export default function Favorites() {
     },
   ];
 
-  const renderStars = (rating: number) => {
+  if (loading) {
     return (
       <div className="flex">
         {[1, 2, 3, 4, 5].map((star) => (
@@ -177,7 +177,7 @@ export default function Favorites() {
               >
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-3">
-                    <span className="text-2xl">{project.icon}</span>
+                    <div className={`w-4 h-4 rounded-full ${project.color}`}></div>
                     <div>
                       <h3 className="text-white font-semibold">
                         {project.name}
@@ -187,8 +187,12 @@ export default function Favorites() {
                       </span>
                     </div>
                   </div>
-                  <button className="text-gray-400 hover:text-white transition-colors">
-                    <MoreVertical className="w-5 h-5" />
+                  
+                  <button
+                    onClick={() => removeFavorite(project.id)}
+                    className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-all"
+                  >
+                    <Heart className="w-5 h-5 fill-current text-red-500" />
                   </button>
                 </div>
 
@@ -220,11 +224,10 @@ export default function Favorites() {
                   >
                     {project.status}
                   </span>
+                  <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getPriorityColor(project.priority)}`}>
+                    {project.priority}
+                  </span>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
 
         {/* Favorite Clients */}
         <div className="mb-8">
@@ -263,9 +266,11 @@ export default function Favorites() {
                       {client.projects}
                     </p>
                   </div>
-                  <div>
-                    <span className="text-gray-400 text-sm">Revenue</span>
-                    <p className="text-white font-semibold">{client.revenue}</p>
+                  <div className="w-full bg-gray-700 rounded-full h-2">
+                    <div 
+                      className="bg-[#ff6b6b] h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${project.progress}%` }}
+                    ></div>
                   </div>
                 </div>
 
@@ -345,9 +350,9 @@ export default function Favorites() {
                       }`}
                     ></div>
                   </div>
-                  <div className="flex-1">
-                    <h3 className="text-white font-semibold">{member.name}</h3>
-                    <p className="text-gray-400 text-sm">{member.role}</p>
+                  <div className="flex items-center text-gray-400">
+                    <Calendar className="w-4 h-4 mr-1" />
+                    <span>{formatDate(project.deadline)}</span>
                   </div>
                 </div>
 

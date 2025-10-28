@@ -15,15 +15,29 @@ import {
 import { motion } from "framer-motion";
 
 export default function Projects() {
-  const projects = [
+  const [searchQuery, setSearchQuery] = useState("")
+  const [filterStatus, setFilterStatus] = useState("All")
+  const [filterPriority, setFilterPriority] = useState("All")
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
+  const [showNewProjectModal, setShowNewProjectModal] = useState(false)
+  const [activeDropdown, setActiveDropdown] = useState<number | null>(null)
+  const [favorites, setFavorites] = useState<number[]>(() => {
+    // Load favorites from localStorage
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('project-favorites')
+      return saved ? JSON.parse(saved) : []
+    }
+    return []
+  })
+  const [projects, setProjects] = useState([
     {
       id: 1,
       name: "E-commerce Platform",
       description: "Modern e-commerce solution with React and Node.js",
       status: "In Progress",
-      progress: 75,
+      progress: 50, // 2 out of 4 subtasks completed
       team: ["John Doe", "Jane Smith", "Mike Johnson"],
-      deadline: "Dec 15, 2024",
+      deadline: "2024-12-15",
       priority: "High",
       color: "bg-blue-500",
     },
@@ -33,9 +47,9 @@ export default function Projects() {
       description:
         "Secure mobile banking application with biometric authentication",
       status: "Review",
-      progress: 90,
+      progress: 50, // 1 out of 2 subtasks completed
       team: ["Sarah Wilson", "Alex Thompson"],
-      deadline: "Nov 30, 2024",
+      deadline: "2024-11-30",
       priority: "Critical",
       color: "bg-red-500",
     },
@@ -119,6 +133,67 @@ export default function Projects() {
     }
   };
 
+  // Filter and search logic
+  const filteredProjects = projects.filter((project) => {
+    const matchesSearch = project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         project.description.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesStatus = filterStatus === "All" || project.status === filterStatus
+    const matchesPriority = filterPriority === "All" || project.priority === filterPriority
+    
+    return matchesSearch && matchesStatus && matchesPriority
+  })
+
+  // Favorites management
+  const toggleFavorite = (projectId: number) => {
+    const newFavorites = favorites.includes(projectId)
+      ? favorites.filter(id => id !== projectId)
+      : [...favorites, projectId]
+    
+    setFavorites(newFavorites)
+    
+    // Save to localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('project-favorites', JSON.stringify(newFavorites))
+      
+      // Also save to a global favorites list for the favorites page
+      const allFavoriteProjects = projects.filter(p => newFavorites.includes(p.id))
+      localStorage.setItem('favorite-projects', JSON.stringify(allFavoriteProjects))
+    }
+  }
+
+  const isFavorite = (projectId: number) => favorites.includes(projectId)
+
+  const handleProjectAction = (action: string, projectId: number) => {
+    const project = projects.find(p => p.id === projectId)
+    
+    switch (action) {
+      case "view":
+        // Navigate to project detail page
+        window.location.href = `/projects/${projectId}`
+        break
+      case "edit":
+        // Could open edit modal or navigate to edit page
+        console.log("Edit project", projectId)
+        break
+      case "pause":
+        if (project?.status === "In Progress") {
+          updateProjectStatus(projectId, "Paused")
+        } else {
+          updateProjectStatus(projectId, "In Progress")
+        }
+        break
+      case "delete":
+        deleteProject(projectId)
+        break
+      case "favorite":
+        toggleFavorite(projectId)
+        break
+      default:
+        console.log(`${action} project ${projectId}`)
+    }
+    setActiveDropdown(null)
+  }
+
   return (
     <div className="min-h-screen bg-[#1a1d23] flex">
       <Sidebar />
@@ -134,7 +209,7 @@ export default function Projects() {
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-white mb-2">Projects</h1>
-            <p className="text-gray-400">Manage and track all your projects</p>
+            <p className="text-gray-400">Manage and track all your projects ({filteredProjects.length} of {projects.length})</p>
           </div>
 
           <button className="bg-[#ff6b6b] hover:bg-[#ff5252] text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-colors">
@@ -144,11 +219,13 @@ export default function Projects() {
         </div>
 
         {/* Filters and Search */}
-        <div className="flex gap-4 mb-8">
-          <div className="flex-1 relative">
+        <div className="flex flex-wrap gap-4 mb-8">
+          <div className="flex-1 min-w-[300px] relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search projects..."
               className="w-full bg-[#2a2d35] text-white placeholder-gray-400 pl-10 pr-4 py-3 rounded-lg border-none focus:ring-2 focus:ring-[#ff6b6b] focus:outline-none"
             />
@@ -175,6 +252,7 @@ export default function Projects() {
             <p className="text-3xl font-bold text-blue-400">
               {projects.filter((p) => p.status === "In Progress").length}
             </p>
+            <p className="text-xs text-gray-500 mt-1">active projects</p>
           </div>
           <div className="bg-[#2a2d35] p-6 rounded-lg">
             <h3 className="text-gray-400 text-sm font-medium mb-2">
@@ -183,6 +261,7 @@ export default function Projects() {
             <p className="text-3xl font-bold text-green-400">
               {projects.filter((p) => p.status === "Completed").length}
             </p>
+            <p className="text-xs text-gray-500 mt-1">finished projects</p>
           </div>
           <div className="bg-[#2a2d35] p-6 rounded-lg">
             <h3 className="text-gray-400 text-sm font-medium mb-2">
@@ -195,6 +274,7 @@ export default function Projects() {
               )}
               %
             </p>
+            <p className="text-xs text-gray-500 mt-1">completion rate</p>
           </div>
         </div>
 
@@ -232,6 +312,9 @@ export default function Projects() {
                   {project.priority}
                 </span>
               </div>
+            ))}
+          </div>
+        )}
 
               {/* Progress */}
               <div className="mb-4">
@@ -247,19 +330,89 @@ export default function Projects() {
                     style={{ width: `${project.progress}%` }}
                   ></div>
                 </div>
-              </div>
 
-              {/* Team and Deadline */}
-              <div className="flex justify-between items-center text-sm">
-                <div className="flex items-center text-gray-400">
-                  <Users className="w-4 h-4 mr-1" />
-                  <span>{project.team.length} members</span>
+                <div>
+                  <label className="block text-gray-400 text-sm mb-2 font-medium">Budget (Optional)</label>
+                  <input
+                    type="text"
+                    value={newProject.budget}
+                    onChange={(e) => setNewProject(prev => ({ ...prev, budget: e.target.value }))}
+                    placeholder="$10,000"
+                    className="w-full bg-[#1a1d23] text-white placeholder-gray-500 px-4 py-3 rounded-lg border-none focus:ring-2 focus:ring-[#ff6b6b] focus:outline-none"
+                  />
                 </div>
-                <div className="flex items-center text-gray-400">
-                  <Calendar className="w-4 h-4 mr-1" />
-                  <span>{project.deadline}</span>
+
+                {/* Subtasks Section */}
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <label className="block text-gray-400 text-sm font-medium">Subtasks</label>
+                    <button
+                      type="button"
+                      onClick={() => setShowSubtaskInput(!showSubtaskInput)}
+                      className="text-[#ff6b6b] hover:text-[#ff5252] text-sm flex items-center gap-1 transition-colors"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Add Subtask
+                    </button>
+                  </div>
+
+                  {showSubtaskInput && (
+                    <div className="flex gap-2 mb-3">
+                      <input
+                        type="text"
+                        value={newSubtask}
+                        onChange={(e) => setNewSubtask(e.target.value)}
+                        placeholder="Enter subtask name"
+                        className="flex-1 bg-[#1a1d23] text-white placeholder-gray-500 px-4 py-2 rounded-lg border-none focus:ring-2 focus:ring-[#ff6b6b] focus:outline-none"
+                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSubtask())}
+                      />
+                      <button
+                        type="button"
+                        onClick={addSubtask}
+                        className="bg-[#ff6b6b] hover:bg-[#ff5252] text-white px-4 py-2 rounded-lg transition-colors"
+                      >
+                        Add
+                      </button>
+                    </div>
+                  )}
+
+                  {newProject.subtasks.length > 0 && (
+                    <div className="space-y-2">
+                      {newProject.subtasks.map((subtask) => (
+                        <div key={subtask.id} className="flex items-center justify-between bg-[#1a1d23] px-4 py-3 rounded-lg">
+                          <span className="text-white">{subtask.name}</span>
+                          <button
+                            type="button"
+                            onClick={() => removeSubtask(subtask.id)}
+                            className="text-red-400 hover:text-red-300 transition-colors"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              </div>
+
+                <div className="flex gap-3 pt-4 border-t border-gray-600">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowNewProjectModal(false)
+                      resetNewProjectForm()
+                    }}
+                    className="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-3 rounded-lg transition-colors font-medium"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 bg-[#ff6b6b] hover:bg-[#ff5252] text-white py-3 rounded-lg transition-colors font-medium"
+                  >
+                    Create Project
+                  </button>
+                </div>
+              </form>
             </div>
           ))}
         </div>
