@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import {
   createUserWithEmailAndPassword,
   updateProfile,
+  sendEmailVerification,
   signInWithPopup,
+  GoogleAuthProvider,
 } from "firebase/auth";
 import { auth, googleProvider } from "@/lib/firebase";
 import Link from "next/link";
@@ -19,7 +21,7 @@ export default function SignUpPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Email/password sign-up
+  // Email/Password Sign-Up
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -32,12 +34,23 @@ export default function SignUpPage() {
         password
       );
 
+      const user = userCredential.user;
+
+      // Update display name if provided
       if (displayName) {
-        await updateProfile(userCredential.user, { displayName });
+        await updateProfile(user, { displayName });
       }
 
-      // Redirect to profile page after sign-up
-      router.push("/profile");
+      // Send verification email
+      await sendEmailVerification(user);
+
+      // Sign out user to prevent login until verified
+      await auth.signOut();
+
+      alert(
+        "Verification email sent! Please check your inbox before signing in."
+      );
+      router.push("/auth/signin");
     } catch (err: any) {
       console.error(err);
       if (err.code === "auth/email-already-in-use") {
@@ -52,39 +65,41 @@ export default function SignUpPage() {
     }
   };
 
-  // Google Sign-Up / Sign-In
-  const handleGoogleSignIn = async () => {
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      console.log("Logged in with Google:", result.user);
+  // Google Sign-Up
+  const handleGoogleSignUp = async () => {
+    setError("");
+    setLoading(true);
 
-      // Redirect to profile page
+    try {
+      await signInWithPopup(auth, googleProvider);
       router.push("/profile");
-    } catch (err) {
-      console.error("Google sign-in error:", err);
-      setError("Failed to sign in with Google.");
+    } catch (err: any) {
+      console.error(err);
+      setError("Failed to sign up with Google. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#1a1d23] p-6">
-      <div className="bg-[#2a2d35] p-8 rounded-lg shadow-lg w-full max-w-md space-y-6">
-        <h1 className="text-2xl font-bold text-white text-center">
+      <div className="bg-[#2a2d35] p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h1 className="text-2xl font-bold text-white mb-6 text-center">
           Create Your Account
         </h1>
 
-        {/* Google Sign-Up */}
+        {/* Google Sign-Up Button */}
         <button
-          type="button"
-          onClick={handleGoogleSignIn}
-          className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition-colors"
+          onClick={handleGoogleSignUp}
+          disabled={loading}
+          className="w-full mb-4 bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg flex items-center justify-center gap-2 transition-colors disabled:opacity-60"
         >
-          Sign up with Google
+          Sign Up with Google
         </button>
 
-        <div className="text-gray-400 text-center">or</div>
+        <div className="text-gray-400 text-sm text-center mb-4">or</div>
 
-        {/* Email/Password Sign-Up */}
+        {/* Email/Password Sign-Up Form */}
         <form onSubmit={handleSignUp} className="space-y-5">
           <div>
             <label className="block text-gray-400 text-sm mb-2">Name</label>
@@ -133,7 +148,7 @@ export default function SignUpPage() {
           </button>
         </form>
 
-        <p className="text-gray-400 text-sm text-center mt-4">
+        <p className="text-gray-400 text-sm text-center mt-6">
           Already have an account?{" "}
           <Link href="/auth/signin" className="text-[#ff6b6b] hover:underline">
             Sign In
