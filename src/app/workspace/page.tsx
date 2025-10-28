@@ -151,11 +151,15 @@ export default function WorkspacePage() {
     // In a real app, this would call an API to delete the workspace
     console.log("Deleting workspace:", selectedWorkspace.id);
     // Mock deleting the workspace
-    const index = mockWorkspaces.findIndex((w) => w.id === selectedWorkspace.id);
+    const index = mockWorkspaces.findIndex(
+      (w) => w.id === selectedWorkspace.id
+    );
     if (index > -1) {
       mockWorkspaces.splice(index, 1);
       // Select another workspace or none
-      const nextWorkspace = mockWorkspaces.find((w) => w.members.includes(currentUser.id));
+      const nextWorkspace = mockWorkspaces.find((w) =>
+        w.members.includes(currentUser.id)
+      );
       setSelectedWorkspaceId(nextWorkspace?.id);
       setSelectedChannelId(undefined);
     }
@@ -218,7 +222,7 @@ export default function WorkspacePage() {
               </button>
             )}
 
-            <button 
+            <button
               onClick={() => setIsWorkspaceSettingsOpen(true)}
               className="w-9 h-9 rounded-lg bg-[#2a2d35] hover:bg-[#323541] flex items-center justify-center transition-colors"
             >

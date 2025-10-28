@@ -18,8 +18,22 @@ interface WorkspaceSettingsModalProps {
 }
 
 const emojiOptions = [
-  "💼", "🚀", "🎯", "💡", "🏢", "🌟", "⚡", "🔥",
-  "🎨", "📊", "🛠️", "🎮", "📱", "💻", "🌍", "🏆"
+  "💼",
+  "🚀",
+  "🎯",
+  "💡",
+  "🏢",
+  "🌟",
+  "⚡",
+  "🔥",
+  "🎨",
+  "📊",
+  "🛠️",
+  "🎮",
+  "📱",
+  "💻",
+  "🌍",
+  "🏆",
 ];
 
 type TabType = "general" | "members" | "danger";
@@ -35,7 +49,9 @@ export default function WorkspaceSettingsModal({
   const [name, setName] = useState(workspace.name);
   const [description, setDescription] = useState(workspace.description);
   const [selectedIcon, setSelectedIcon] = useState(workspace.icon || "💼");
-  const [errors, setErrors] = useState<{ name?: string; description?: string }>({});
+  const [errors, setErrors] = useState<{ name?: string; description?: string }>(
+    {}
+  );
   const [hasChanges, setHasChanges] = useState(false);
 
   // Check if current user is the owner
@@ -51,7 +67,7 @@ export default function WorkspaceSettingsModal({
 
   // Track changes
   useEffect(() => {
-    const changed = 
+    const changed =
       name !== workspace.name ||
       description !== workspace.description ||
       selectedIcon !== (workspace.icon || "💼");
@@ -243,7 +259,8 @@ export default function WorkspaceSettingsModal({
                     value={name}
                     onChange={(e) => {
                       setName(e.target.value);
-                      if (errors.name) setErrors({ ...errors, name: undefined });
+                      if (errors.name)
+                        setErrors({ ...errors, name: undefined });
                     }}
                     disabled={!isOwner}
                     placeholder="e.g., Marketing Team, Design Squad"
@@ -363,7 +380,9 @@ export default function WorkspaceSettingsModal({
                               </div>
                             )}
                           </div>
-                          <p className="text-gray-400 text-sm">{member.email}</p>
+                          <p className="text-gray-400 text-sm">
+                            {member.email}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -384,9 +403,9 @@ export default function WorkspaceSettingsModal({
                         Delete Workspace
                       </h3>
                       <p className="text-gray-400 text-sm mb-4">
-                        Once you delete this workspace, there is no going back. This
-                        will permanently delete all channels, messages, and tasks
-                        associated with this workspace.
+                        Once you delete this workspace, there is no going back.
+                        This will permanently delete all channels, messages, and
+                        tasks associated with this workspace.
                       </p>
                       <button
                         type="button"
