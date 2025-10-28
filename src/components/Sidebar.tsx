@@ -1,6 +1,6 @@
 "use client"
 
-import { BarChart3, MessageSquare, Folder, Heart, Star, User } from "lucide-react"
+import { BarChart3, MessageSquare, Folder, Heart, Star, User, Calendar } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -11,6 +11,7 @@ export default function Sidebar() {
     { icon: BarChart3, href: "/", label: "Dashboard" },
     { icon: MessageSquare, href: "/messages", label: "Messages" },
     { icon: Folder, href: "/projects", label: "Projects" },
+    { icon: Calendar, href: "/calendar", label: "Calendar" },
     { icon: Heart, href: "/favorites", label: "Favorites" },
     { icon: Star, href: "/reviews", label: "Reviews" },
     { icon: User, href: "/profile", label: "Profile" }
