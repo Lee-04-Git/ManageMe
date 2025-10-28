@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import {
@@ -11,24 +12,38 @@ import {
   Users,
   Clock,
   CheckCircle,
+  Trash2,
+  Star,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function Projects() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [filterStatus, setFilterStatus] = useState("All")
-  const [filterPriority, setFilterPriority] = useState("All")
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
-  const [showNewProjectModal, setShowNewProjectModal] = useState(false)
-  const [activeDropdown, setActiveDropdown] = useState<number | null>(null)
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterStatus, setFilterStatus] = useState("All");
+  const [filterPriority, setFilterPriority] = useState("All");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [showNewProjectModal, setShowNewProjectModal] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
+  const [showSubtaskInput, setShowSubtaskInput] = useState(false);
+  const [newSubtask, setNewSubtask] = useState("");
+  const [newProject, setNewProject] = useState({
+    name: "",
+    description: "",
+    status: "Planning",
+    priority: "Medium",
+    deadline: "",
+    budget: "",
+    color: "bg-blue-500",
+    subtasks: [] as { id: number; name: string; completed: boolean }[]
+  });
   const [favorites, setFavorites] = useState<number[]>(() => {
     // Load favorites from localStorage
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('project-favorites')
-      return saved ? JSON.parse(saved) : []
+      const saved = localStorage.getItem('project-favorites');
+      return saved ? JSON.parse(saved) : [];
     }
-    return []
-  })
+    return [];
+  });
   const [projects, setProjects] = useState([
     {
       id: 1,
@@ -99,7 +114,7 @@ export default function Projects() {
       priority: "Medium",
       color: "bg-indigo-500",
     },
-  ];
+  ]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -162,6 +177,57 @@ export default function Projects() {
   }
 
   const isFavorite = (projectId: number) => favorites.includes(projectId)
+
+  // Helper functions for project management
+  const updateProjectStatus = (projectId: number, newStatus: string) => {
+    setProjects(prevProjects =>
+      prevProjects.map(p =>
+        p.id === projectId ? { ...p, status: newStatus } : p
+      )
+    )
+  }
+
+  const deleteProject = (projectId: number) => {
+    if (confirm("Are you sure you want to delete this project?")) {
+      setProjects(prevProjects => prevProjects.filter(p => p.id !== projectId))
+    }
+  }
+
+  const addSubtask = () => {
+    if (newSubtask.trim()) {
+      setNewProject(prev => ({
+        ...prev,
+        subtasks: [
+          ...prev.subtasks,
+          { id: Date.now(), name: newSubtask, completed: false }
+        ]
+      }))
+      setNewSubtask("")
+      setShowSubtaskInput(false)
+    }
+  }
+
+  const removeSubtask = (subtaskId: number) => {
+    setNewProject(prev => ({
+      ...prev,
+      subtasks: prev.subtasks.filter(st => st.id !== subtaskId)
+    }))
+  }
+
+  const resetNewProjectForm = () => {
+    setNewProject({
+      name: "",
+      description: "",
+      status: "Planning",
+      priority: "Medium",
+      deadline: "",
+      budget: "",
+      color: "bg-blue-500",
+      subtasks: []
+    })
+    setNewSubtask("")
+    setShowSubtaskInput(false)
+  }
 
   const handleProjectAction = (action: string, projectId: number) => {
     const project = projects.find(p => p.id === projectId)
@@ -312,9 +378,6 @@ export default function Projects() {
                   {project.priority}
                 </span>
               </div>
-            ))}
-          </div>
-        )}
 
               {/* Progress */}
               <div className="mb-4">
@@ -330,89 +393,33 @@ export default function Projects() {
                     style={{ width: `${project.progress}%` }}
                   ></div>
                 </div>
+              </div>
 
-                <div>
-                  <label className="block text-gray-400 text-sm mb-2 font-medium">Budget (Optional)</label>
-                  <input
-                    type="text"
-                    value={newProject.budget}
-                    onChange={(e) => setNewProject(prev => ({ ...prev, budget: e.target.value }))}
-                    placeholder="$10,000"
-                    className="w-full bg-[#1a1d23] text-white placeholder-gray-500 px-4 py-3 rounded-lg border-none focus:ring-2 focus:ring-[#ff6b6b] focus:outline-none"
-                  />
-                </div>
+              {/* Deadline */}
+              <div className="flex items-center gap-2 text-sm text-gray-400 mb-4">
+                <Calendar className="w-4 h-4" />
+                <span>{new Date(project.deadline).toLocaleDateString()}</span>
+              </div>
 
-                {/* Subtasks Section */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <label className="block text-gray-400 text-sm font-medium">Subtasks</label>
-                    <button
-                      type="button"
-                      onClick={() => setShowSubtaskInput(!showSubtaskInput)}
-                      className="text-[#ff6b6b] hover:text-[#ff5252] text-sm flex items-center gap-1 transition-colors"
-                    >
-                      <Plus className="w-4 h-4" />
-                      Add Subtask
-                    </button>
-                  </div>
-
-                  {showSubtaskInput && (
-                    <div className="flex gap-2 mb-3">
-                      <input
-                        type="text"
-                        value={newSubtask}
-                        onChange={(e) => setNewSubtask(e.target.value)}
-                        placeholder="Enter subtask name"
-                        className="flex-1 bg-[#1a1d23] text-white placeholder-gray-500 px-4 py-2 rounded-lg border-none focus:ring-2 focus:ring-[#ff6b6b] focus:outline-none"
-                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSubtask())}
-                      />
-                      <button
-                        type="button"
-                        onClick={addSubtask}
-                        className="bg-[#ff6b6b] hover:bg-[#ff5252] text-white px-4 py-2 rounded-lg transition-colors"
-                      >
-                        Add
-                      </button>
-                    </div>
-                  )}
-
-                  {newProject.subtasks.length > 0 && (
-                    <div className="space-y-2">
-                      {newProject.subtasks.map((subtask) => (
-                        <div key={subtask.id} className="flex items-center justify-between bg-[#1a1d23] px-4 py-3 rounded-lg">
-                          <span className="text-white">{subtask.name}</span>
-                          <button
-                            type="button"
-                            onClick={() => removeSubtask(subtask.id)}
-                            className="text-red-400 hover:text-red-300 transition-colors"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex gap-3 pt-4 border-t border-gray-600">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowNewProjectModal(false)
-                      resetNewProjectForm()
-                    }}
-                    className="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-3 rounded-lg transition-colors font-medium"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex-1 bg-[#ff6b6b] hover:bg-[#ff5252] text-white py-3 rounded-lg transition-colors font-medium"
-                  >
-                    Create Project
-                  </button>
-                </div>
-              </form>
+              {/* Actions */}
+              <div className="flex items-center gap-2 pt-4 border-t border-gray-700">
+                <button
+                  onClick={() => window.location.href = `/projects/${project.id}`}
+                  className="flex-1 bg-[#ff6b6b] hover:bg-[#ff5252] text-white px-4 py-2 rounded-lg transition-colors text-sm"
+                >
+                  View Details
+                </button>
+                <button
+                  onClick={() => toggleFavorite(project.id)}
+                  className={`p-2 rounded-lg transition-colors ${
+                    isFavorite(project.id)
+                      ? 'bg-yellow-500/20 text-yellow-500'
+                      : 'bg-gray-700 text-gray-400 hover:text-yellow-500'
+                  }`}
+                >
+                  <Star className={`w-4 h-4 ${isFavorite(project.id) ? 'fill-current' : ''}`} />
+                </button>
+              </div>
             </div>
           ))}
         </div>
