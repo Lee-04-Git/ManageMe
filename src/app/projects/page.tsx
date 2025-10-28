@@ -12,6 +12,8 @@ import {
   Users,
   Clock,
   CheckCircle,
+  Trash2,
+  Star,
   Folder,
 } from "lucide-react";
 import { motion } from "framer-motion";
@@ -23,6 +25,18 @@ export default function Projects() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showNewProjectModal, setShowNewProjectModal] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
+  const [showSubtaskInput, setShowSubtaskInput] = useState(false);
+  const [newSubtask, setNewSubtask] = useState("");
+  const [newProject, setNewProject] = useState({
+    name: "",
+    description: "",
+    status: "Planning",
+    priority: "Medium",
+    deadline: "",
+    budget: "",
+    color: "bg-blue-500",
+    subtasks: [] as { id: number; name: string; completed: boolean }[]
+  });
   const [favorites, setFavorites] = useState<number[]>(() => {
     // Load favorites from localStorage
     if (typeof window !== "undefined") {
@@ -174,17 +188,56 @@ export default function Projects() {
 
   const isFavorite = (projectId: number) => favorites.includes(projectId);
 
+  // Helper functions for project management
   const updateProjectStatus = (projectId: number, newStatus: string) => {
-    setProjects((prev) =>
-      prev.map((project) =>
-        project.id === projectId ? { ...project, status: newStatus } : project
+    setProjects(prevProjects =>
+      prevProjects.map(p =>
+        p.id === projectId ? { ...p, status: newStatus } : p
       )
     );
   };
 
   const deleteProject = (projectId: number) => {
-    setProjects((prev) => prev.filter((project) => project.id !== projectId));
+    if (confirm("Are you sure you want to delete this project?")) {
+      setProjects(prevProjects => prevProjects.filter(p => p.id !== projectId));
+    }
   };
+
+  const addSubtask = () => {
+    if (newSubtask.trim()) {
+      setNewProject(prev => ({
+        ...prev,
+        subtasks: [
+          ...prev.subtasks,
+          { id: Date.now(), name: newSubtask, completed: false }
+        ]
+      }))
+      setNewSubtask("")
+      setShowSubtaskInput(false)
+    }
+  }
+
+  const removeSubtask = (subtaskId: number) => {
+    setNewProject(prev => ({
+      ...prev,
+      subtasks: prev.subtasks.filter(st => st.id !== subtaskId)
+    }))
+  }
+
+  const resetNewProjectForm = () => {
+    setNewProject({
+      name: "",
+      description: "",
+      status: "Planning",
+      priority: "Medium",
+      deadline: "",
+      budget: "",
+      color: "bg-blue-500",
+      subtasks: []
+    })
+    setNewSubtask("")
+    setShowSubtaskInput(false)
+  }
 
   const handleProjectAction = (action: string, projectId: number) => {
     const project = projects.find((p) => p.id === projectId);

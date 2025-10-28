@@ -24,6 +24,9 @@ export default function Favorites() {
       progress: 75,
       lastUpdated: "2 hours ago",
       icon: "📱",
+      color: "bg-blue-500",
+      priority: "High",
+      deadline: "2024-12-15",
     },
     {
       id: 2,
@@ -35,6 +38,9 @@ export default function Favorites() {
       progress: 100,
       lastUpdated: "1 day ago",
       icon: "🤖",
+      color: "bg-purple-500",
+      priority: "Medium",
+      deadline: "2024-10-15",
     },
   ];
 
@@ -124,7 +130,38 @@ export default function Favorites() {
     },
   ];
 
-  if (loading) {
+  // Helper functions
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "Completed":
+        return "bg-green-500";
+      case "In Progress":
+        return "bg-blue-500";
+      default:
+        return "bg-gray-500";
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case "High":
+      case "Critical":
+        return "bg-red-500/20 text-red-400";
+      case "Medium":
+        return "bg-yellow-500/20 text-yellow-400";
+      case "Low":
+        return "bg-green-500/20 text-green-400";
+      default:
+        return "bg-gray-500/20 text-gray-400";
+    }
+  };
+
+  const removeFavorite = (id: number) => {
+    console.log(`Removing favorite ${id}`);
+    // Implement actual removal logic here
+  };
+
+  const renderStars = (rating: number) => {
     return (
       <div className="flex">
         {[1, 2, 3, 4, 5].map((star) => (
@@ -139,6 +176,10 @@ export default function Favorites() {
         ))}
       </div>
     );
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString();
   };
 
   return (
@@ -228,6 +269,10 @@ export default function Favorites() {
                     {project.priority}
                   </span>
                 </div>
+              </div>
+            ))}
+          </div>
+        </div>
 
         {/* Favorite Clients */}
         <div className="mb-8">
@@ -266,11 +311,11 @@ export default function Favorites() {
                       {client.projects}
                     </p>
                   </div>
-                  <div className="w-full bg-gray-700 rounded-full h-2">
-                    <div 
-                      className="bg-[#ff6b6b] h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${project.progress}%` }}
-                    ></div>
+                  <div>
+                    <span className="text-gray-400 text-sm">Revenue</span>
+                    <p className="text-white font-semibold">
+                      {client.revenue}
+                    </p>
                   </div>
                 </div>
 
@@ -350,9 +395,9 @@ export default function Favorites() {
                       }`}
                     ></div>
                   </div>
-                  <div className="flex items-center text-gray-400">
-                    <Calendar className="w-4 h-4 mr-1" />
-                    <span>{formatDate(project.deadline)}</span>
+                  <div>
+                    <h3 className="text-white font-semibold">{member.name}</h3>
+                    <span className="text-gray-400 text-sm">{member.role}</span>
                   </div>
                 </div>
 
