@@ -1,10 +1,5 @@
 "use client";
 
-<<<<<<< HEAD
-import { BarChart3, MessageSquare, Folder, Heart, Star, User, Calendar } from "lucide-react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-=======
 import {
   BarChart3,
   MessageSquare,
@@ -13,10 +8,10 @@ import {
   Star,
   User,
   Users,
+  Calendar,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import InstantLink from "./InstantLink";
->>>>>>> 85c5d59ef13a910cf75c8d1998dbe2661911bc10
 
 export default function Sidebar() {
   const pathname = usePathname();

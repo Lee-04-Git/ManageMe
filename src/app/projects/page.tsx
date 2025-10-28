@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import {
@@ -11,24 +12,26 @@ import {
   Users,
   Clock,
   CheckCircle,
+  Folder,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function Projects() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [filterStatus, setFilterStatus] = useState("All")
-  const [filterPriority, setFilterPriority] = useState("All")
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
-  const [showNewProjectModal, setShowNewProjectModal] = useState(false)
-  const [activeDropdown, setActiveDropdown] = useState<number | null>(null)
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterStatus, setFilterStatus] = useState("All");
+  const [filterPriority, setFilterPriority] = useState("All");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [showNewProjectModal, setShowNewProjectModal] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
   const [favorites, setFavorites] = useState<number[]>(() => {
     // Load favorites from localStorage
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('project-favorites')
-      return saved ? JSON.parse(saved) : []
+      const saved = localStorage.getItem('project-favorites');
+      return saved ? JSON.parse(saved) : [];
     }
-    return []
-  })
+    return [];
+  });
+
   const [projects, setProjects] = useState([
     {
       id: 1,
@@ -99,7 +102,7 @@ export default function Projects() {
       priority: "Medium",
       color: "bg-indigo-500",
     },
-  ];
+  ]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -136,63 +139,73 @@ export default function Projects() {
   // Filter and search logic
   const filteredProjects = projects.filter((project) => {
     const matchesSearch = project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         project.description.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesStatus = filterStatus === "All" || project.status === filterStatus
-    const matchesPriority = filterPriority === "All" || project.priority === filterPriority
+                         project.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = filterStatus === "All" || project.status === filterStatus;
+    const matchesPriority = filterPriority === "All" || project.priority === filterPriority;
     
-    return matchesSearch && matchesStatus && matchesPriority
-  })
+    return matchesSearch && matchesStatus && matchesPriority;
+  });
 
   // Favorites management
   const toggleFavorite = (projectId: number) => {
     const newFavorites = favorites.includes(projectId)
       ? favorites.filter(id => id !== projectId)
-      : [...favorites, projectId]
+      : [...favorites, projectId];
     
-    setFavorites(newFavorites)
+    setFavorites(newFavorites);
     
     // Save to localStorage
     if (typeof window !== 'undefined') {
-      localStorage.setItem('project-favorites', JSON.stringify(newFavorites))
+      localStorage.setItem('project-favorites', JSON.stringify(newFavorites));
       
       // Also save to a global favorites list for the favorites page
-      const allFavoriteProjects = projects.filter(p => newFavorites.includes(p.id))
-      localStorage.setItem('favorite-projects', JSON.stringify(allFavoriteProjects))
+      const allFavoriteProjects = projects.filter(p => newFavorites.includes(p.id));
+      localStorage.setItem('favorite-projects', JSON.stringify(allFavoriteProjects));
     }
-  }
+  };
 
-  const isFavorite = (projectId: number) => favorites.includes(projectId)
+  const isFavorite = (projectId: number) => favorites.includes(projectId);
+
+  const updateProjectStatus = (projectId: number, newStatus: string) => {
+    setProjects(prev => prev.map(project => 
+      project.id === projectId ? { ...project, status: newStatus } : project
+    ));
+  };
+
+  const deleteProject = (projectId: number) => {
+    setProjects(prev => prev.filter(project => project.id !== projectId));
+  };
 
   const handleProjectAction = (action: string, projectId: number) => {
-    const project = projects.find(p => p.id === projectId)
+    const project = projects.find(p => p.id === projectId);
     
     switch (action) {
       case "view":
         // Navigate to project detail page
-        window.location.href = `/projects/${projectId}`
-        break
+        window.location.href = `/projects/${projectId}`;
+        break;
       case "edit":
         // Could open edit modal or navigate to edit page
-        console.log("Edit project", projectId)
-        break
+        console.log("Edit project", projectId);
+        break;
       case "pause":
         if (project?.status === "In Progress") {
-          updateProjectStatus(projectId, "Paused")
+          updateProjectStatus(projectId, "Paused");
         } else {
-          updateProjectStatus(projectId, "In Progress")
+          updateProjectStatus(projectId, "In Progress");
         }
-        break
+        break;
       case "delete":
-        deleteProject(projectId)
-        break
+        deleteProject(projectId);
+        break;
       case "favorite":
-        toggleFavorite(projectId)
-        break
+        toggleFavorite(projectId);
+        break;
       default:
-        console.log(`${action} project ${projectId}`)
+        console.log(`${action} project ${projectId}`);
     }
-    setActiveDropdown(null)
-  }
+    setActiveDropdown(null);
+  };
 
   return (
     <div className="min-h-screen bg-[#1a1d23] flex">
@@ -212,7 +225,10 @@ export default function Projects() {
             <p className="text-gray-400">Manage and track all your projects ({filteredProjects.length} of {projects.length})</p>
           </div>
 
-          <button className="bg-[#ff6b6b] hover:bg-[#ff5252] text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-colors">
+          <button 
+            onClick={() => setShowNewProjectModal(true)}
+            className="bg-[#ff6b6b] hover:bg-[#ff5252] text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-colors"
+          >
             <Plus className="w-5 h-5" />
             New Project
           </button>
@@ -280,16 +296,50 @@ export default function Projects() {
 
         {/* Projects Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.map((project) => (
+          {filteredProjects.map((project) => (
             <div
               key={project.id}
               className="bg-[#2a2d35] rounded-lg p-6 hover:bg-[#3a3d45] transition-colors"
             >
               <div className="flex justify-between items-start mb-4">
                 <div className={`w-3 h-3 rounded-full ${project.color}`}></div>
-                <button className="text-gray-400 hover:text-white transition-colors">
-                  <MoreVertical className="w-5 h-5" />
-                </button>
+                <div className="relative">
+                  <button 
+                    onClick={() => setActiveDropdown(activeDropdown === project.id ? null : project.id)}
+                    className="text-gray-400 hover:text-white transition-colors"
+                  >
+                    <MoreVertical className="w-5 h-5" />
+                  </button>
+                  
+                  {activeDropdown === project.id && (
+                    <div className="absolute right-0 top-8 bg-[#3a3d45] rounded-lg shadow-lg py-2 min-w-[150px] z-10">
+                      <button
+                        onClick={() => handleProjectAction("view", project.id)}
+                        className="w-full text-left px-4 py-2 text-gray-300 hover:bg-[#4a4d55] hover:text-white transition-colors"
+                      >
+                        View Details
+                      </button>
+                      <button
+                        onClick={() => handleProjectAction("edit", project.id)}
+                        className="w-full text-left px-4 py-2 text-gray-300 hover:bg-[#4a4d55] hover:text-white transition-colors"
+                      >
+                        Edit Project
+                      </button>
+                      <button
+                        onClick={() => handleProjectAction("favorite", project.id)}
+                        className="w-full text-left px-4 py-2 text-gray-300 hover:bg-[#4a4d55] hover:text-white transition-colors"
+                      >
+                        {isFavorite(project.id) ? "Remove from Favorites" : "Add to Favorites"}
+                      </button>
+                      <button
+                        onClick={() => handleProjectAction("delete", project.id)}
+                        className="w-full text-left px-4 py-2 text-red-400 hover:bg-[#4a4d55] hover:text-red-300 transition-colors"
+                      >
+                        Delete Project
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <h3 className="text-white font-semibold text-lg mb-2">
@@ -312,9 +362,6 @@ export default function Projects() {
                   {project.priority}
                 </span>
               </div>
-            ))}
-          </div>
-        )}
 
               {/* Progress */}
               <div className="mb-4">
@@ -330,92 +377,33 @@ export default function Projects() {
                     style={{ width: `${project.progress}%` }}
                   ></div>
                 </div>
+              </div>
 
-                <div>
-                  <label className="block text-gray-400 text-sm mb-2 font-medium">Budget (Optional)</label>
-                  <input
-                    type="text"
-                    value={newProject.budget}
-                    onChange={(e) => setNewProject(prev => ({ ...prev, budget: e.target.value }))}
-                    placeholder="$10,000"
-                    className="w-full bg-[#1a1d23] text-white placeholder-gray-500 px-4 py-3 rounded-lg border-none focus:ring-2 focus:ring-[#ff6b6b] focus:outline-none"
-                  />
+              {/* Team and Deadline */}
+              <div className="flex justify-between items-center text-sm">
+                <div className="flex items-center gap-2">
+                  <Users className="w-4 h-4 text-gray-400" />
+                  <span className="text-gray-400">{project.team.length} members</span>
                 </div>
-
-                {/* Subtasks Section */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <label className="block text-gray-400 text-sm font-medium">Subtasks</label>
-                    <button
-                      type="button"
-                      onClick={() => setShowSubtaskInput(!showSubtaskInput)}
-                      className="text-[#ff6b6b] hover:text-[#ff5252] text-sm flex items-center gap-1 transition-colors"
-                    >
-                      <Plus className="w-4 h-4" />
-                      Add Subtask
-                    </button>
-                  </div>
-
-                  {showSubtaskInput && (
-                    <div className="flex gap-2 mb-3">
-                      <input
-                        type="text"
-                        value={newSubtask}
-                        onChange={(e) => setNewSubtask(e.target.value)}
-                        placeholder="Enter subtask name"
-                        className="flex-1 bg-[#1a1d23] text-white placeholder-gray-500 px-4 py-2 rounded-lg border-none focus:ring-2 focus:ring-[#ff6b6b] focus:outline-none"
-                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSubtask())}
-                      />
-                      <button
-                        type="button"
-                        onClick={addSubtask}
-                        className="bg-[#ff6b6b] hover:bg-[#ff5252] text-white px-4 py-2 rounded-lg transition-colors"
-                      >
-                        Add
-                      </button>
-                    </div>
-                  )}
-
-                  {newProject.subtasks.length > 0 && (
-                    <div className="space-y-2">
-                      {newProject.subtasks.map((subtask) => (
-                        <div key={subtask.id} className="flex items-center justify-between bg-[#1a1d23] px-4 py-3 rounded-lg">
-                          <span className="text-white">{subtask.name}</span>
-                          <button
-                            type="button"
-                            onClick={() => removeSubtask(subtask.id)}
-                            className="text-red-400 hover:text-red-300 transition-colors"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-gray-400" />
+                  <span className="text-gray-400">{project.deadline}</span>
                 </div>
-
-                <div className="flex gap-3 pt-4 border-t border-gray-600">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowNewProjectModal(false)
-                      resetNewProjectForm()
-                    }}
-                    className="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-3 rounded-lg transition-colors font-medium"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex-1 bg-[#ff6b6b] hover:bg-[#ff5252] text-white py-3 rounded-lg transition-colors font-medium"
-                  >
-                    Create Project
-                  </button>
-                </div>
-              </form>
+              </div>
             </div>
           ))}
         </div>
+
+        {/* Empty State */}
+        {filteredProjects.length === 0 && (
+          <div className="text-center py-12">
+            <div className="text-gray-400 mb-4">
+              <Folder className="w-16 h-16 mx-auto mb-4 opacity-50" />
+              <h3 className="text-xl font-semibold mb-2">No projects found</h3>
+              <p>Try adjusting your search or filter criteria</p>
+            </div>
+          </div>
+        )}
       </motion.main>
     </div>
   );
