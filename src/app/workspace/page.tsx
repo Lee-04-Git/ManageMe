@@ -9,6 +9,7 @@ import InviteModal from "@/components/workspace/InviteModal";
 import TaskLinkModal from "@/components/workspace/TaskLinkModal";
 import CreateWorkspaceModal from "@/components/workspace/CreateWorkspaceModal";
 import CreateChannelModal from "@/components/workspace/CreateChannelModal";
+import WorkspaceSettingsModal from "@/components/workspace/WorkspaceSettingsModal";
 import {
   mockWorkspaces,
   currentUser,
@@ -33,6 +34,7 @@ export default function WorkspacePage() {
   const [isCreateWorkspaceOpen, setIsCreateWorkspaceOpen] = useState(false);
   const [isCreateChannelOpen, setIsCreateChannelOpen] = useState(false);
   const [isTaskLinkModalOpen, setIsTaskLinkModalOpen] = useState(false);
+  const [isWorkspaceSettingsOpen, setIsWorkspaceSettingsOpen] = useState(false);
 
   const selectedWorkspace = mockWorkspaces.find(
     (w) => w.id === selectedWorkspaceId
@@ -128,6 +130,41 @@ export default function WorkspacePage() {
     setSelectedChannelId(newChannel.id);
   };
 
+  const handleUpdateWorkspace = (data: {
+    name: string;
+    description: string;
+    icon: string;
+  }) => {
+    if (!selectedWorkspace) return;
+
+    // In a real app, this would call an API to update the workspace
+    console.log("Updating workspace:", data);
+    // Mock updating the workspace
+    selectedWorkspace.name = data.name;
+    selectedWorkspace.description = data.description;
+    selectedWorkspace.icon = data.icon;
+  };
+
+  const handleDeleteWorkspace = () => {
+    if (!selectedWorkspace) return;
+
+    // In a real app, this would call an API to delete the workspace
+    console.log("Deleting workspace:", selectedWorkspace.id);
+    // Mock deleting the workspace
+    const index = mockWorkspaces.findIndex(
+      (w) => w.id === selectedWorkspace.id
+    );
+    if (index > -1) {
+      mockWorkspaces.splice(index, 1);
+      // Select another workspace or none
+      const nextWorkspace = mockWorkspaces.find((w) =>
+        w.members.includes(currentUser.id)
+      );
+      setSelectedWorkspaceId(nextWorkspace?.id);
+      setSelectedChannelId(undefined);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#0f1117] flex">
       <Sidebar />
@@ -185,7 +222,10 @@ export default function WorkspacePage() {
               </button>
             )}
 
-            <button className="w-9 h-9 rounded-lg bg-[#2a2d35] hover:bg-[#323541] flex items-center justify-center transition-colors">
+            <button
+              onClick={() => setIsWorkspaceSettingsOpen(true)}
+              className="w-9 h-9 rounded-lg bg-[#2a2d35] hover:bg-[#323541] flex items-center justify-center transition-colors"
+            >
               <Settings className="w-4 h-4 text-gray-400" />
             </button>
           </div>
@@ -369,6 +409,17 @@ export default function WorkspacePage() {
         onClose={() => setIsCreateChannelOpen(false)}
         onCreateChannel={handleCreateChannelSubmit}
       />
+
+      {/* Workspace Settings Modal */}
+      {selectedWorkspace && (
+        <WorkspaceSettingsModal
+          isOpen={isWorkspaceSettingsOpen}
+          onClose={() => setIsWorkspaceSettingsOpen(false)}
+          workspace={selectedWorkspace}
+          onUpdateWorkspace={handleUpdateWorkspace}
+          onDeleteWorkspace={handleDeleteWorkspace}
+        />
+      )}
     </div>
   );
 }
