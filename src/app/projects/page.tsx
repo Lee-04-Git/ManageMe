@@ -12,12 +12,9 @@ import {
   Users,
   Clock,
   CheckCircle,
-<<<<<<< HEAD
   Trash2,
   Star,
-=======
   Folder,
->>>>>>> c25b8dd647bf7c96b303bc25364cd45f3c3685f6
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -28,7 +25,6 @@ export default function Projects() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showNewProjectModal, setShowNewProjectModal] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
-<<<<<<< HEAD
   const [showSubtaskInput, setShowSubtaskInput] = useState(false);
   const [newSubtask, setNewSubtask] = useState("");
   const [newProject, setNewProject] = useState({
@@ -43,22 +39,13 @@ export default function Projects() {
   });
   const [favorites, setFavorites] = useState<number[]>(() => {
     // Load favorites from localStorage
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('project-favorites');
-=======
-  const [favorites, setFavorites] = useState<number[]>(() => {
-    // Load favorites from localStorage
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("project-favorites");
->>>>>>> c25b8dd647bf7c96b303bc25364cd45f3c3685f6
       return saved ? JSON.parse(saved) : [];
     }
     return [];
   });
-<<<<<<< HEAD
-=======
 
->>>>>>> c25b8dd647bf7c96b303bc25364cd45f3c3685f6
   const [projects, setProjects] = useState([
     {
       id: 1,
@@ -201,32 +188,20 @@ export default function Projects() {
 
   const isFavorite = (projectId: number) => favorites.includes(projectId);
 
-  const updateProjectStatus = (projectId: number, newStatus: string) => {
-    setProjects((prev) =>
-      prev.map((project) =>
-        project.id === projectId ? { ...project, status: newStatus } : project
-      )
-    );
-  };
-
-  const deleteProject = (projectId: number) => {
-    setProjects((prev) => prev.filter((project) => project.id !== projectId));
-  };
-
   // Helper functions for project management
   const updateProjectStatus = (projectId: number, newStatus: string) => {
     setProjects(prevProjects =>
       prevProjects.map(p =>
         p.id === projectId ? { ...p, status: newStatus } : p
       )
-    )
-  }
+    );
+  };
 
   const deleteProject = (projectId: number) => {
     if (confirm("Are you sure you want to delete this project?")) {
-      setProjects(prevProjects => prevProjects.filter(p => p.id !== projectId))
+      setProjects(prevProjects => prevProjects.filter(p => p.id !== projectId));
     }
-  }
+  };
 
   const addSubtask = () => {
     if (newSubtask.trim()) {
@@ -480,32 +455,6 @@ export default function Projects() {
                 </div>
               </div>
 
-<<<<<<< HEAD
-              {/* Deadline */}
-              <div className="flex items-center gap-2 text-sm text-gray-400 mb-4">
-                <Calendar className="w-4 h-4" />
-                <span>{new Date(project.deadline).toLocaleDateString()}</span>
-              </div>
-
-              {/* Actions */}
-              <div className="flex items-center gap-2 pt-4 border-t border-gray-700">
-                <button
-                  onClick={() => window.location.href = `/projects/${project.id}`}
-                  className="flex-1 bg-[#ff6b6b] hover:bg-[#ff5252] text-white px-4 py-2 rounded-lg transition-colors text-sm"
-                >
-                  View Details
-                </button>
-                <button
-                  onClick={() => toggleFavorite(project.id)}
-                  className={`p-2 rounded-lg transition-colors ${
-                    isFavorite(project.id)
-                      ? 'bg-yellow-500/20 text-yellow-500'
-                      : 'bg-gray-700 text-gray-400 hover:text-yellow-500'
-                  }`}
-                >
-                  <Star className={`w-4 h-4 ${isFavorite(project.id) ? 'fill-current' : ''}`} />
-                </button>
-=======
               {/* Team and Deadline */}
               <div className="flex justify-between items-center text-sm">
                 <div className="flex items-center gap-2">
@@ -518,7 +467,6 @@ export default function Projects() {
                   <Calendar className="w-4 h-4 text-gray-400" />
                   <span className="text-gray-400">{project.deadline}</span>
                 </div>
->>>>>>> c25b8dd647bf7c96b303bc25364cd45f3c3685f6
               </div>
             </div>
           ))}

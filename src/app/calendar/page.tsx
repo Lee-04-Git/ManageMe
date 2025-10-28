@@ -11,19 +11,19 @@ export default function CalendarPage() {
 
   // Mock data - In a real app, this would come from your backend/state management
   const projects = [
-    { id: 1, name: "E-commerce Platform", deadline: new Date(2024, 11, 15), color: "bg-blue-500", priority: "High" },
-    { id: 2, name: "Mobile App Redesign", deadline: new Date(2024, 10, 28), color: "bg-purple-500", priority: "Medium" },
-    { id: 3, name: "API Integration", deadline: new Date(2024, 10, 30), color: "bg-green-500", priority: "High" }
+    { id: 1, name: "E-commerce Platform", deadline: new Date(2025, 11, 15), color: "bg-blue-500", priority: "High" },
+    { id: 2, name: "Mobile App Redesign", deadline: new Date(2025, 10, 28), color: "bg-purple-500", priority: "Medium" },
+    { id: 3, name: "API Integration", deadline: new Date(2025, 10, 30), color: "bg-green-500", priority: "High" }
   ]
 
   const tasks = [
-    { id: 1, name: "Project Setup", dueDate: new Date(2024, 10, 5), project: "E-commerce Platform", assignee: "John Doe", priority: "High", completed: true },
-    { id: 2, name: "Database Design", dueDate: new Date(2024, 10, 12), project: "E-commerce Platform", assignee: "Mike Johnson", priority: "High", completed: true },
-    { id: 3, name: "API Development", dueDate: new Date(2024, 10, 1), project: "E-commerce Platform", assignee: "Mike Johnson", priority: "High", completed: false },
-    { id: 4, name: "Frontend Development", dueDate: new Date(2024, 10, 20), project: "E-commerce Platform", assignee: "Jane Smith", priority: "Medium", completed: false },
-    { id: 5, name: "Testing & Deployment", dueDate: new Date(2024, 11, 10), project: "E-commerce Platform", assignee: "John Doe", priority: "Medium", completed: false },
-    { id: 6, name: "UI Mockups", dueDate: new Date(2024, 10, 15), project: "Mobile App Redesign", assignee: "Jane Smith", priority: "High", completed: false },
-    { id: 7, name: "Authentication API", dueDate: new Date(2024, 10, 25), project: "API Integration", assignee: "Mike Johnson", priority: "Critical", completed: false }
+    { id: 1, name: "Project Setup", dueDate: new Date(2025, 10, 5), project: "E-commerce Platform", assignee: "John Doe", priority: "High", completed: true },
+    { id: 2, name: "Database Design", dueDate: new Date(2025, 10, 12), project: "E-commerce Platform", assignee: "Mike Johnson", priority: "High", completed: true },
+    { id: 3, name: "API Development", dueDate: new Date(2025, 10, 1), project: "E-commerce Platform", assignee: "Mike Johnson", priority: "High", completed: false },
+    { id: 4, name: "Frontend Development", dueDate: new Date(2025, 10, 20), project: "E-commerce Platform", assignee: "Jane Smith", priority: "Medium", completed: false },
+    { id: 5, name: "Testing & Deployment", dueDate: new Date(2025, 11, 10), project: "E-commerce Platform", assignee: "John Doe", priority: "Medium", completed: false },
+    { id: 6, name: "UI Mockups", dueDate: new Date(2025, 10, 15), project: "Mobile App Redesign", assignee: "Jane Smith", priority: "High", completed: false },
+    { id: 7, name: "Authentication API", dueDate: new Date(2025, 10, 25), project: "API Integration", assignee: "Mike Johnson", priority: "Critical", completed: false }
   ]
 
   // Calendar helper functions
