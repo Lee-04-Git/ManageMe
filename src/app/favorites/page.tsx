@@ -1,6 +1,17 @@
-import Sidebar from "@/components/Sidebar"
-import Header from "@/components/Header"
-import { Heart, Star, Bookmark, MoreVertical, Calendar, Users, ExternalLink } from "lucide-react"
+"use client";
+
+import Sidebar from "@/components/Sidebar";
+import Header from "@/components/Header";
+import {
+  Heart,
+  Star,
+  Bookmark,
+  MoreVertical,
+  Calendar,
+  Users,
+  ExternalLink,
+} from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function Favorites() {
   const favoriteProjects = [
@@ -12,19 +23,20 @@ export default function Favorites() {
       status: "In Progress",
       progress: 75,
       lastUpdated: "2 hours ago",
-      icon: "📱"
+      icon: "📱",
     },
     {
       id: 2,
       name: "AI Analytics Tool",
       type: "Project",
-      description: "Machine learning analytics platform for business intelligence",
+      description:
+        "Machine learning analytics platform for business intelligence",
       status: "Completed",
       progress: 100,
       lastUpdated: "1 day ago",
-      icon: "🤖"
-    }
-  ]
+      icon: "🤖",
+    },
+  ];
 
   const favoriteClients = [
     {
@@ -35,7 +47,7 @@ export default function Favorites() {
       revenue: "$45,000",
       lastContact: "Yesterday",
       rating: 5,
-      icon: "🏢"
+      icon: "🏢",
     },
     {
       id: 2,
@@ -45,9 +57,9 @@ export default function Favorites() {
       revenue: "$28,500",
       lastContact: "3 days ago",
       rating: 4,
-      icon: "🚀"
-    }
-  ]
+      icon: "🚀",
+    },
+  ];
 
   const favoriteResources = [
     {
@@ -57,7 +69,7 @@ export default function Favorites() {
       url: "https://react.dev",
       category: "Documentation",
       addedDate: "Oct 15, 2024",
-      icon: "📚"
+      icon: "📚",
     },
     {
       id: 2,
@@ -66,7 +78,7 @@ export default function Favorites() {
       url: "https://figma.com",
       category: "Design",
       addedDate: "Oct 20, 2024",
-      icon: "🎨"
+      icon: "🎨",
     },
     {
       id: 3,
@@ -75,9 +87,9 @@ export default function Favorites() {
       url: "https://github.com",
       category: "Code",
       addedDate: "Oct 22, 2024",
-      icon: "💻"
-    }
-  ]
+      icon: "💻",
+    },
+  ];
 
   const favoriteTeamMembers = [
     {
@@ -88,7 +100,7 @@ export default function Favorites() {
       projects: 5,
       rating: 5,
       avatar: "AT",
-      status: "online"
+      status: "online",
     },
     {
       id: 2,
@@ -98,7 +110,7 @@ export default function Favorites() {
       projects: 3,
       rating: 4,
       avatar: "SW",
-      status: "away"
+      status: "away",
     },
     {
       id: 3,
@@ -108,118 +120,160 @@ export default function Favorites() {
       projects: 7,
       rating: 5,
       avatar: "MC",
-      status: "online"
-    }
-  ]
+      status: "online",
+    },
+  ];
 
-  const renderStars = (rating: number) => {
+  if (loading) {
     return (
       <div className="flex">
         {[1, 2, 3, 4, 5].map((star) => (
           <Star
             key={star}
             className={`w-4 h-4 ${
-              star <= rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-600'
+              star <= rating
+                ? "text-yellow-400 fill-yellow-400"
+                : "text-gray-600"
             }`}
           />
         ))}
       </div>
-    )
-  }
+    );
+  };
 
   return (
     <div className="min-h-screen bg-[#1a1d23] flex">
       <Sidebar />
-      
-      <main className="flex-1 p-8 overflow-auto">
+
+      <motion.main
+        className="flex-1 p-8 overflow-auto"
+        initial={{ opacity: 0.98 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.05 }}
+      >
         <Header />
-        
+
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Favorites</h1>
-          <p className="text-gray-400">Your bookmarked projects, clients, resources, and team members</p>
+          <p className="text-gray-400">
+            Your bookmarked projects, clients, resources, and team members
+          </p>
         </div>
 
         {/* Favorite Projects */}
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-4">
             <Bookmark className="w-5 h-5 text-[#ff6b6b]" />
-            <h2 className="text-xl font-semibold text-white">Favorite Projects</h2>
+            <h2 className="text-xl font-semibold text-white">
+              Favorite Projects
+            </h2>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {favoriteProjects.map((project) => (
-              <div key={project.id} className="bg-[#2a2d35] rounded-lg p-6 hover:bg-[#3a3d45] transition-colors">
+              <div
+                key={project.id}
+                className="bg-[#2a2d35] rounded-lg p-6 hover:bg-[#3a3d45] transition-colors"
+              >
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-3">
-                    <span className="text-2xl">{project.icon}</span>
+                    <div className={`w-4 h-4 rounded-full ${project.color}`}></div>
                     <div>
-                      <h3 className="text-white font-semibold">{project.name}</h3>
-                      <span className="text-[#ff6b6b] text-sm">{project.type}</span>
+                      <h3 className="text-white font-semibold">
+                        {project.name}
+                      </h3>
+                      <span className="text-[#ff6b6b] text-sm">
+                        {project.type}
+                      </span>
                     </div>
                   </div>
-                  <button className="text-gray-400 hover:text-white transition-colors">
-                    <MoreVertical className="w-5 h-5" />
+                  
+                  <button
+                    onClick={() => removeFavorite(project.id)}
+                    className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-all"
+                  >
+                    <Heart className="w-5 h-5 fill-current text-red-500" />
                   </button>
                 </div>
-                
-                <p className="text-gray-400 text-sm mb-4">{project.description}</p>
-                
+
+                <p className="text-gray-400 text-sm mb-4">
+                  {project.description}
+                </p>
+
                 <div className="flex justify-between items-center mb-3">
                   <span className="text-gray-400 text-sm">Progress</span>
-                  <span className="text-white text-sm font-medium">{project.progress}%</span>
+                  <span className="text-white text-sm font-medium">
+                    {project.progress}%
+                  </span>
                 </div>
                 <div className="w-full bg-gray-700 rounded-full h-2 mb-4">
-                  <div 
+                  <div
                     className="bg-[#ff6b6b] h-2 rounded-full"
                     style={{ width: `${project.progress}%` }}
                   ></div>
                 </div>
-                
+
                 <div className="flex justify-between items-center text-sm text-gray-400">
                   <span>Last updated: {project.lastUpdated}</span>
-                  <span className={`px-2 py-1 rounded text-xs ${
-                    project.status === 'Completed' ? 'bg-green-500 text-white' : 'bg-blue-500 text-white'
-                  }`}>
+                  <span
+                    className={`px-2 py-1 rounded text-xs ${
+                      project.status === "Completed"
+                        ? "bg-green-500 text-white"
+                        : "bg-blue-500 text-white"
+                    }`}
+                  >
                     {project.status}
                   </span>
+                  <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${getPriorityColor(project.priority)}`}>
+                    {project.priority}
+                  </span>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
 
         {/* Favorite Clients */}
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-4">
             <Heart className="w-5 h-5 text-[#ff6b6b]" />
-            <h2 className="text-xl font-semibold text-white">Favorite Clients</h2>
+            <h2 className="text-xl font-semibold text-white">
+              Favorite Clients
+            </h2>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {favoriteClients.map((client) => (
-              <div key={client.id} className="bg-[#2a2d35] rounded-lg p-6 hover:bg-[#3a3d45] transition-colors">
+              <div
+                key={client.id}
+                className="bg-[#2a2d35] rounded-lg p-6 hover:bg-[#3a3d45] transition-colors"
+              >
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{client.icon}</span>
                     <div>
-                      <h3 className="text-white font-semibold">{client.name}</h3>
-                      <span className="text-[#ff6b6b] text-sm">{client.type}</span>
+                      <h3 className="text-white font-semibold">
+                        {client.name}
+                      </h3>
+                      <span className="text-[#ff6b6b] text-sm">
+                        {client.type}
+                      </span>
                     </div>
                   </div>
                   {renderStars(client.rating)}
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <div>
                     <span className="text-gray-400 text-sm">Projects</span>
-                    <p className="text-white font-semibold">{client.projects}</p>
+                    <p className="text-white font-semibold">
+                      {client.projects}
+                    </p>
                   </div>
-                  <div>
-                    <span className="text-gray-400 text-sm">Revenue</span>
-                    <p className="text-white font-semibold">{client.revenue}</p>
+                  <div className="w-full bg-gray-700 rounded-full h-2">
+                    <div 
+                      className="bg-[#ff6b6b] h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${project.progress}%` }}
+                    ></div>
                   </div>
                 </div>
-                
+
                 <div className="text-sm text-gray-400">
                   Last contact: {client.lastContact}
                 </div>
@@ -232,25 +286,34 @@ export default function Favorites() {
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-4">
             <Bookmark className="w-5 h-5 text-[#ff6b6b]" />
-            <h2 className="text-xl font-semibold text-white">Favorite Resources</h2>
+            <h2 className="text-xl font-semibold text-white">
+              Favorite Resources
+            </h2>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {favoriteResources.map((resource) => (
-              <div key={resource.id} className="bg-[#2a2d35] rounded-lg p-6 hover:bg-[#3a3d45] transition-colors">
+              <div
+                key={resource.id}
+                className="bg-[#2a2d35] rounded-lg p-6 hover:bg-[#3a3d45] transition-colors"
+              >
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{resource.icon}</span>
                     <div>
-                      <h3 className="text-white font-semibold text-sm">{resource.name}</h3>
-                      <span className="text-[#ff6b6b] text-xs">{resource.category}</span>
+                      <h3 className="text-white font-semibold text-sm">
+                        {resource.name}
+                      </h3>
+                      <span className="text-[#ff6b6b] text-xs">
+                        {resource.category}
+                      </span>
                     </div>
                   </div>
                   <button className="text-gray-400 hover:text-white transition-colors">
                     <ExternalLink className="w-4 h-4" />
                   </button>
                 </div>
-                
+
                 <div className="text-xs text-gray-400">
                   Added: {resource.addedDate}
                 </div>
@@ -263,36 +326,47 @@ export default function Favorites() {
         <div>
           <div className="flex items-center gap-2 mb-4">
             <Users className="w-5 h-5 text-[#ff6b6b]" />
-            <h2 className="text-xl font-semibold text-white">Favorite Team Members</h2>
+            <h2 className="text-xl font-semibold text-white">
+              Favorite Team Members
+            </h2>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {favoriteTeamMembers.map((member) => (
-              <div key={member.id} className="bg-[#2a2d35] rounded-lg p-6 hover:bg-[#3a3d45] transition-colors">
+              <div
+                key={member.id}
+                className="bg-[#2a2d35] rounded-lg p-6 hover:bg-[#3a3d45] transition-colors"
+              >
                 <div className="flex items-center gap-3 mb-4">
                   <div className="relative">
                     <div className="w-12 h-12 rounded-full bg-[#ff6b6b] flex items-center justify-center text-white font-semibold">
                       {member.avatar}
                     </div>
-                    <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-[#2a2d35] ${
-                      member.status === 'online' ? 'bg-green-500' : 'bg-yellow-500'
-                    }`}></div>
+                    <div
+                      className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-[#2a2d35] ${
+                        member.status === "online"
+                          ? "bg-green-500"
+                          : "bg-yellow-500"
+                      }`}
+                    ></div>
                   </div>
-                  <div className="flex-1">
-                    <h3 className="text-white font-semibold">{member.name}</h3>
-                    <p className="text-gray-400 text-sm">{member.role}</p>
+                  <div className="flex items-center text-gray-400">
+                    <Calendar className="w-4 h-4 mr-1" />
+                    <span>{formatDate(project.deadline)}</span>
                   </div>
                 </div>
-                
+
                 <div className="flex justify-between items-center mb-3">
-                  <span className="text-gray-400 text-sm">Projects: {member.projects}</span>
+                  <span className="text-gray-400 text-sm">
+                    Projects: {member.projects}
+                  </span>
                   {renderStars(member.rating)}
                 </div>
               </div>
             ))}
           </div>
         </div>
-      </main>
+      </motion.main>
     </div>
-  )
+  );
 }

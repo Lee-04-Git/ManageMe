@@ -120,6 +120,23 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Smooth page transitions - prevent flash */
+  html {
+    background-color: #1a1d23;
+  }
+
+  body {
+    background-color: #1a1d23;
+    min-height: 100vh;
+  }
+
+  /* Hardware acceleration for smoother animations */
+  main {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    will-change: opacity;
+  }
 }
 
 /* Hide Next.js error overlay portal */
