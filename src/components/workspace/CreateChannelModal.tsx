@@ -22,7 +22,9 @@ export default function CreateChannelModal({
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [type, setType] = useState<"public" | "private">("public");
-  const [errors, setErrors] = useState<{ name?: string; description?: string }>({});
+  const [errors, setErrors] = useState<{ name?: string; description?: string }>(
+    {}
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +34,8 @@ export default function CreateChannelModal({
     if (!name.trim()) {
       newErrors.name = "Channel name is required";
     } else if (!/^[a-z0-9-]+$/.test(name.trim())) {
-      newErrors.name = "Channel name can only contain lowercase letters, numbers, and hyphens";
+      newErrors.name =
+        "Channel name can only contain lowercase letters, numbers, and hyphens";
     }
     if (!description.trim()) {
       newErrors.description = "Description is required";
@@ -143,9 +146,7 @@ export default function CreateChannelModal({
                     <div className="flex items-center gap-3 mb-2">
                       <div
                         className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                          type === "public"
-                            ? "bg-[#ff6b6b]"
-                            : "bg-[#1a1d23]"
+                          type === "public" ? "bg-[#ff6b6b]" : "bg-[#1a1d23]"
                         }`}
                       >
                         <Globe
@@ -179,9 +180,7 @@ export default function CreateChannelModal({
                     <div className="flex items-center gap-3 mb-2">
                       <div
                         className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                          type === "private"
-                            ? "bg-[#ff6b6b]"
-                            : "bg-[#1a1d23]"
+                          type === "private" ? "bg-[#ff6b6b]" : "bg-[#1a1d23]"
                         }`}
                       >
                         <Lock

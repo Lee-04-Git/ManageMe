@@ -15,8 +15,22 @@ interface CreateWorkspaceModalProps {
 }
 
 const emojiOptions = [
-  "💼", "🚀", "🎯", "💡", "🏢", "🌟", "⚡", "🔥",
-  "🎨", "📊", "🛠️", "🎮", "📱", "💻", "🌍", "🏆"
+  "💼",
+  "🚀",
+  "🎯",
+  "💡",
+  "🏢",
+  "🌟",
+  "⚡",
+  "🔥",
+  "🎨",
+  "📊",
+  "🛠️",
+  "🎮",
+  "📱",
+  "💻",
+  "🌍",
+  "🏆",
 ];
 
 export default function CreateWorkspaceModal({
@@ -27,11 +41,13 @@ export default function CreateWorkspaceModal({
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [selectedIcon, setSelectedIcon] = useState("💼");
-  const [errors, setErrors] = useState<{ name?: string; description?: string }>({});
+  const [errors, setErrors] = useState<{ name?: string; description?: string }>(
+    {}
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validation
     const newErrors: { name?: string; description?: string } = {};
     if (!name.trim()) {

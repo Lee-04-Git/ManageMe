@@ -108,7 +108,7 @@ export default function WorkspacePage() {
     type: "public" | "private";
   }) => {
     if (!selectedWorkspace) return;
-    
+
     // In a real app, this would call an API to create the channel
     console.log("Creating channel:", data);
     // Mock creating a new channel
