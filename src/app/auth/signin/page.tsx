@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { auth, googleProvider } from "@/lib/firebase";
 import Link from "next/link";
 
 export default function SignInPage() {
@@ -14,13 +14,13 @@ export default function SignInPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Email/password sign-in
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      // Sign in with Firebase
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
@@ -28,7 +28,6 @@ export default function SignInPage() {
       );
       console.log("Logged in user:", userCredential.user);
 
-      // Redirect to profile page
       router.push("/profile");
     } catch (err: any) {
       console.error(err);
@@ -45,13 +44,38 @@ export default function SignInPage() {
     }
   };
 
+  // Google sign-in
+  const handleGoogleSignIn = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      console.log("Logged in with Google:", result.user);
+
+      router.push("/profile");
+    } catch (err) {
+      console.error("Google sign-in error:", err);
+      setError("Failed to sign in with Google.");
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#1a1d23] p-6">
-      <div className="bg-[#2a2d35] p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h1 className="text-2xl font-bold text-white mb-6 text-center">
+      <div className="bg-[#2a2d35] p-8 rounded-lg shadow-lg w-full max-w-md space-y-6">
+        <h1 className="text-2xl font-bold text-white text-center">
           Welcome Back 👋
         </h1>
 
+        {/* Google Sign-In */}
+        <button
+          type="button"
+          onClick={handleGoogleSignIn}
+          className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition-colors"
+        >
+          Sign in with Google
+        </button>
+
+        <div className="text-gray-400 text-center">or</div>
+
+        {/* Email/Password Sign-In */}
         <form onSubmit={handleSignIn} className="space-y-5">
           <div>
             <label className="block text-gray-400 text-sm mb-2">Email</label>
@@ -88,7 +112,7 @@ export default function SignInPage() {
           </button>
         </form>
 
-        <p className="text-gray-400 text-sm text-center mt-6">
+        <p className="text-gray-400 text-sm text-center mt-4">
           Don’t have an account?{" "}
           <Link href="/auth/signup" className="text-[#ff6b6b] hover:underline">
             Sign Up

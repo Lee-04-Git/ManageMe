@@ -2,8 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import {
+  createUserWithEmailAndPassword,
+  updateProfile,
+  signInWithPopup,
+} from "firebase/auth";
+import { auth, googleProvider } from "@/lib/firebase";
 import Link from "next/link";
 
 export default function SignUpPage() {
@@ -15,26 +19,25 @@ export default function SignUpPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Email/password sign-up
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      // Create user
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
         password
       );
 
-      // Update display name
       if (displayName) {
         await updateProfile(userCredential.user, { displayName });
       }
 
-      // Redirect to Sign In page
-      router.push("/auth/signin");
+      // Redirect to profile page after sign-up
+      router.push("/profile");
     } catch (err: any) {
       console.error(err);
       if (err.code === "auth/email-already-in-use") {
@@ -49,13 +52,39 @@ export default function SignUpPage() {
     }
   };
 
+  // Google Sign-Up / Sign-In
+  const handleGoogleSignIn = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      console.log("Logged in with Google:", result.user);
+
+      // Redirect to profile page
+      router.push("/profile");
+    } catch (err) {
+      console.error("Google sign-in error:", err);
+      setError("Failed to sign in with Google.");
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#1a1d23] p-6">
-      <div className="bg-[#2a2d35] p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h1 className="text-2xl font-bold text-white mb-6 text-center">
+      <div className="bg-[#2a2d35] p-8 rounded-lg shadow-lg w-full max-w-md space-y-6">
+        <h1 className="text-2xl font-bold text-white text-center">
           Create Your Account
         </h1>
 
+        {/* Google Sign-Up */}
+        <button
+          type="button"
+          onClick={handleGoogleSignIn}
+          className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition-colors"
+        >
+          Sign up with Google
+        </button>
+
+        <div className="text-gray-400 text-center">or</div>
+
+        {/* Email/Password Sign-Up */}
         <form onSubmit={handleSignUp} className="space-y-5">
           <div>
             <label className="block text-gray-400 text-sm mb-2">Name</label>
@@ -104,7 +133,7 @@ export default function SignUpPage() {
           </button>
         </form>
 
-        <p className="text-gray-400 text-sm text-center mt-6">
+        <p className="text-gray-400 text-sm text-center mt-4">
           Already have an account?{" "}
           <Link href="/auth/signin" className="text-[#ff6b6b] hover:underline">
             Sign In
