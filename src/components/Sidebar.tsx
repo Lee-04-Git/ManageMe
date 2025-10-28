@@ -8,6 +8,7 @@ import {
   Star,
   User,
   Users,
+  Calendar,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import InstantLink from "./InstantLink";
@@ -20,6 +21,7 @@ export default function Sidebar() {
     { icon: Users, href: "/workspace", label: "Workspace" },
     { icon: MessageSquare, href: "/messages", label: "Messages" },
     { icon: Folder, href: "/projects", label: "Projects" },
+    { icon: Calendar, href: "/calendar", label: "Calendar" },
     { icon: Heart, href: "/favorites", label: "Favorites" },
     { icon: Star, href: "/reviews", label: "Reviews" },
     { icon: User, href: "/profile", label: "Profile" },
